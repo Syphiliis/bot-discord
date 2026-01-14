@@ -1,20 +1,26 @@
 import discord
 from discord import app_commands
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # ==========================================
 # CONFIGURATION SECTION
 # ==========================================
 
 # 1. Your Bot Token
-BOT_TOKEN = '<bot_token>'
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 # 2. The ID of the role to assign on success
-ROLE_ID = <role_id>
+# Convert to int if exists, else None
+ROLE_ID = int(os.getenv('ROLE_ID')) if os.getenv('ROLE_ID') else None
 
 # 3. Your Server (Guild) ID
 # Required to sync commands instantly. If None, commands sync globally (can take 1 hour).
-GUILD_ID = <guild_id>
+GUILD_ID = int(os.getenv('GUILD_ID')) if os.getenv('GUILD_ID') else None
+
 
 # 4. File Names
 EMAILS_FILE = 'emails.txt'
@@ -89,11 +95,11 @@ def append_used_email(email):
 # SLASH COMMANDS
 # ==========================================
 
-@client.tree.command(name="verify", description="Verify your email to get access.")
+@client.tree.command(name="beta", description="Verify your email to get access.")
 @app_commands.describe(email="Your email address")
-async def verify(interaction: discord.Interaction, email: str):
+async def beta(interaction: discord.Interaction, email: str):
     """
-    Slash command /verify [email]
+    Slash command /beta [email]
     """
     user = interaction.user
     user_desc = f"{user.name}#{user.discriminator} (ID: {user.id})"
