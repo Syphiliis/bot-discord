@@ -14,7 +14,8 @@ A Discord bot that assigns a role to users who verify their email address via a 
 
 ## Step 1: Configure the Bot (Bot Tab)
 
-1.  On the left sidebar, click **"Bot"**.
+1.  Go to the [Discord Developer Portal](https://discord.com/developers/applications) and click on your application.
+2.  On the left sidebar, click **"Bot"**.
 2.  **Privileged Gateway Intents** (Scroll down to this section):
     *   [x] **Presence Intent**: (Optional, leave unchecked)
     *   [x] **Server Members Intent**: **CHECK THIS** (Required to give roles).
