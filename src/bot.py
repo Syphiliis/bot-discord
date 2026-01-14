@@ -4,8 +4,12 @@ import os
 from dotenv import load_dotenv
 import logging
 
+from pathlib import Path
+
 # Load environment variables from .env file
-load_dotenv()
+# Explicitly look for .env in the project root (parent of src)
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 # ==========================================
 # CONFIGURATION SECTION
@@ -16,8 +20,9 @@ ROLE_ID = int(os.getenv('ROLE_ID')) if os.getenv('ROLE_ID') else None
 GUILD_ID = int(os.getenv('GUILD_ID')) if os.getenv('GUILD_ID') else None
 ADMIN_ROLE_ID = int(os.getenv('ADMIN_ROLE_ID')) if os.getenv('ADMIN_ROLE_ID') else None
 
-EMAILS_FILE = 'emails.txt'
-USED_EMAILS_FILE = 'used_emails.txt'
+DATA_DIR = BASE_DIR / 'data'
+EMAILS_FILE = DATA_DIR / 'emails.txt'
+USED_EMAILS_FILE = DATA_DIR / 'used_emails.txt'
 LOG_CHANNEL_NAME = 'admin-logs'
 
 # ==========================================

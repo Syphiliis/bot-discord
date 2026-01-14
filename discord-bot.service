@@ -1,0 +1,26 @@
+[Unit]
+Description=Discord Bot Service
+After=network.target
+
+[Service]
+# Change this to the user that will run the bot
+User=ubuntu
+# Group=ubuntu
+
+# Set the working directory to where your bot is located
+WorkingDirectory=/home/ubuntu/bot-discord
+
+# Command to run the bot using the virtual environment's Python
+# Ensure the path to python points to the venv inside your project
+ExecStart=/home/ubuntu/bot-discord/venv/bin/python src/bot.py
+
+# Restart the bot automatically if it crashes
+Restart=always
+RestartSec=10
+
+# Output logs to syslog (accessible via journalctl)
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

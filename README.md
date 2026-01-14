@@ -73,8 +73,15 @@ Create a text channel named `admin-logs` in your server. Make it private so only
     - `/admin add [email]`: Add an email to the whitelist.
     - `/admin remove [email]`: Remove an email.
 
+## Data Files
+
+The bot uses the `data/` directory for storing:
+- `emails.txt` (Whitelist)
+- `used_emails.txt` (Already verified emails)
+- `whitelist.txt` (Legacy/Backup)
+
 ## How to Run
 
 ```bash
-python bot.py
+python src/bot.py
 ```
