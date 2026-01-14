@@ -4,9 +4,15 @@ A Discord bot that assigns a role to users who verify their email address via a 
 
 ## Features
 - **Slash Command**: `/beta [email]` (Hidden/Ephemeral response)
-- **Whitelist**: Checks against `emails.txt`.
-- **One-time Use**: Tracks used emails in `used_emails.txt` to prevent multiple accounts using the same email.
-- **Secure Config**: Uses `.env` file for sensitive tokens.
+- **Admin Commands**: 
+    - `/admin add [email]`
+    - `/admin remove [email]`
+- **Logging**:
+    - Console logs.
+    - Post success messages to `#admin-logs` (if channel exists).
+- **Security**: 
+    - Uses `.env` for secrets.
+    - Admin commands protected by `ADMIN_ROLE_ID`.
 
 ## Prerequisites
 
@@ -16,59 +22,31 @@ A Discord bot that assigns a role to users who verify their email address via a 
     pip install -r requirements.txt
     ```
 
-## Step 1: Configure the Bot (Bot Tab)
+## Configuration (.env)
 
-1.  Go to the [Discord Developer Portal](https://discord.com/developers/applications) and click on your application.
-2.  On the left sidebar, click **"Bot"**.
-3.  **Privileged Gateway Intents** (Scroll down to this section):
-    *   [x] **Presence Intent**: (Optional, leave unchecked)
-    *   [x] **Server Members Intent**: **CHECK THIS** (Required to give roles).
-    *   [x] **Message Content Intent**: **CHECK THIS** (Recommended for future features).
-    *   Click **"Save Changes"** at the bottom.
-4.  **Token**:
-    *   Click **"Reset Token"**.
-    *   Copy the long string of characters. This is your `BOT_TOKEN`.
+Create a `.env` file:
 
-## Step 2: Create Invite Link (OAuth2 Tab)
+```env
+BOT_TOKEN=your_token_here
+ROLE_ID=123456789 (Role given to verified users)
+GUILD_ID=987654321 (Your Server ID)
+ADMIN_ROLE_ID=111222333 (Role ID allowed to use /admin commands)
+```
 
-1.  On the left sidebar, click on **"OAuth2"**.
-2.  If you see a sub-menu under OAuth2, click **"URL Generator"**. If not, scroll down to the **"OAuth2 URL Generator"** section on the main OAuth2 page.
-3.  **Scopes** (This is a large grid of checkboxes):
-    *   Find and check **`bot`** (This makes the Bot Permissions section appear).
-    *   Find and check **`applications.commands`** (Required for `/beta`).
-4.  **Bot Permissions** (This section appears BELOW the Scopes grid after you check `bot`):
-    *   Under "General Permissions", check **`Manage Roles`**.
-    *   Under "Text Permissions", check **`View Channels`** and **`Send Messages`**.
-5.  **Generated URL**:
-    *   Scroll to the very bottom of the page.
-    *   Copy the URL in the "Generated URL" field.
-    *   Paste this URL into a new browser tab to invite the bot to your server.
+## Setup Log Channel
 
-## Step 3: Configuration (.env)
+Create a text channel named `admin-logs` in your server. Make it private so only Admins and the Bot can see it. The bot will automatically post verification success messages there.
 
-1.  Create a file named `.env` in the same folder as `bot.py`.
-2.  Add your secrets inside it like this:
+## Commands
 
-    ```env
-    BOT_TOKEN=paste_your_token_here
-    ROLE_ID=123456789
-    GUILD_ID=111111111
-    ```
+- **User**:
+    - `/beta [email]`: Verify account.
+- **Admin** (Requires `ADMIN_ROLE_ID`):
+    - `/admin add [email]`: Add an email to the whitelist.
+    - `/admin remove [email]`: Remove an email.
 
-3.  **Explanation**:
-    - `BOT_TOKEN`: Your bot token from Step 1.
-    - `ROLE_ID`: Right-click the Role in discord -> Copy ID.
-    - `GUILD_ID`: Right-click the Server Name -> Copy ID.
-
-## Step 4: Manage Data
-
-1.  **`emails.txt`**: Add allowed emails, one per line.
-2.  **`used_emails.txt`**: Leave empty or manage manually if you want to reset a user.
-
-## Step 5: Run
+## How to Run
 
 ```bash
 python bot.py
 ```
-
-Wait until you see "Commands synced...". Then in Discord, type `/` and you should see `/beta`.
