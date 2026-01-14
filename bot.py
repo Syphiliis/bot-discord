@@ -90,6 +90,17 @@ def remove_email_from_file(filename, email_to_remove):
             f.writelines(lines)
     return found
 
+async def log_to_channel(guild, message):
+    """Helper to send messages to the admin log channel if it exists."""
+    if not guild:
+        return
+    log_channel = discord.utils.get(guild.channels, name=LOG_CHANNEL_NAME)
+    if log_channel:
+        try:
+            await log_channel.send(message)
+        except Exception as e:
+            logging.error(f"Could not send to log channel: {e}")
+
 # ==========================================
 # ADMIN COMMANDS
 # ==========================================
@@ -111,6 +122,7 @@ async def admin(interaction: discord.Interaction, action: app_commands.Choice[st
         return
 
     email = email.lower().strip()
+    user = interaction.user
     
     if action.value == "add":
         whitelisted = load_emails(EMAILS_FILE)
@@ -119,13 +131,15 @@ async def admin(interaction: discord.Interaction, action: app_commands.Choice[st
         else:
             save_email(EMAILS_FILE, email)
             await interaction.response.send_message(f"✅ Added `{email}` to whitelist.", ephemeral=True)
-            logging.info(f"ADMIN ADD - {interaction.user} added {email}")
+            logging.info(f"ADMIN ADD - {user} added {email}")
+            await log_to_channel(interaction.guild, f"ℹ️ **ADMIN ADD**: {user.mention} added `{email}` to whitelist.")
             
     elif action.value == "remove":
         removed = remove_email_from_file(EMAILS_FILE, email)
         if removed:
             await interaction.response.send_message(f"✅ Removed `{email}` from whitelist.", ephemeral=True)
-            logging.info(f"ADMIN REMOVE - {interaction.user} removed {email}")
+            logging.info(f"ADMIN REMOVE - {user} removed {email}")
+            await log_to_channel(interaction.guild, f"ℹ️ **ADMIN REMOVE**: {user.mention} removed `{email}` from whitelist.")
         else:
             await interaction.response.send_message(f"⚠️ `{email}` was not found in whitelist.", ephemeral=True)
 
@@ -158,6 +172,7 @@ async def beta(interaction: discord.Interaction, email: str):
             f"❌ Error: The email `{email_cleaned}` has already been used.", 
             ephemeral=True
         )
+        await log_to_channel(interaction.guild, f"⚠️ **FAILED**: {user.mention} tried used email `{email_cleaned}`.")
         return
 
     if email_cleaned not in whitelisted_emails:
@@ -166,6 +181,7 @@ async def beta(interaction: discord.Interaction, email: str):
             f"❌ Error: The email `{email_cleaned}` is not in the allowed list.", 
             ephemeral=True
         )
+        await log_to_channel(interaction.guild, f"⚠️ **FAILED**: {user.mention} tried invalid email `{email_cleaned}`.")
         return
 
     # 4. Success Case
@@ -195,12 +211,7 @@ async def beta(interaction: discord.Interaction, email: str):
         )
 
         # 5. Log to #admin-logs channel
-        log_channel = discord.utils.get(interaction.guild.channels, name=LOG_CHANNEL_NAME)
-        if log_channel:
-            try:
-                await log_channel.send(f"✅ **Verified**: {user.mention} (`{user.id}`) used email `{email_cleaned}`.")
-            except Exception as e:
-                logging.error(f"Could not send to log channel: {e}")
+        await log_to_channel(guild, f"✅ **Verified**: {user.mention} (`{user.id}`) used email `{email_cleaned}`.")
 
     except discord.Forbidden:
         logging.error(f"FAILED - Permission Error | Bot cannot assign role {role.name} to {user_desc}. Check role hierarchy.")
