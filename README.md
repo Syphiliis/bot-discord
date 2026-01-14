@@ -11,7 +11,10 @@ A professional, UI-based Discord bot for verifying users via email whitelist.
 
 ## Prerequisites
 1.  **Python 3.8+**: [Download](https://www.python.org/downloads/)
-2.  **Libraries**: `pip install discord.py python-dotenv`
+2.  **Required Libraries**: 
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Configuration (.env)
 Create a `.env` file:
